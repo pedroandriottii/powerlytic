@@ -3,9 +3,7 @@ import Link from 'next/link'
 
 const navItems = [
     { icon: Home, label: 'Overview', href: '/' },
-    { icon: LineChart, label: 'Reports', href: '/reports' },
-    { icon: Bell, label: 'Notificações', href: '/notifications' },
-    { icon: User, label: 'Perfil', href: '/profile' }
+    { icon: LineChart, label: 'Estimativa', href: '/reports' },
 ]
 
 export function NavBar({ currentPath }: { currentPath: string }) {

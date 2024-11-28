@@ -21,7 +21,6 @@ export function ConsumptionCard({
   return (
     <Card className="bg-purple-900 text-white">
       <CardContent className="p-4 space-y-4">
-        {/* Toggle Group for Week/Month Selection */}
         <div className="flex w-full items-end justify-end">
           <div className="bg-purple-800/50 rounded-md p-1 flex gap-1 w-fit">
             <ToggleGroup
@@ -52,9 +51,8 @@ export function ConsumptionCard({
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold">{(weeklyData.week2.total_consumption / 1000).toFixed(2)} kWh</span>
               <span
-                className={`text-sm ${
-                  weeklyData.percentage_change >= 0 ? "text-green-300" : "text-red-300"
-                }`}
+                className={`text-sm ${weeklyData.percentage_change >= 0 ? "text-green-300" : "text-red-300"
+                  }`}
               >
                 {weeklyData.percentage_change.toFixed(2)}%
               </span>
@@ -66,9 +64,8 @@ export function ConsumptionCard({
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold">{(data.month2.total_consumption / 1000).toFixed(2)} kWh</span>
               <span
-                className={`text-sm ${
-                  data.percentage_change >= 0 ? "text-green-300" : "text-red-300"
-                }`}
+                className={`text-sm ${data.percentage_change >= 0 ? "text-green-300" : "text-red-300"
+                  }`}
               >
                 {data.percentage_change.toFixed(2)}%
               </span>

@@ -16,7 +16,6 @@ export function TipCard(tip: TipProps) {
                                 ? tip.tips.map((tip) => tip.replace(/\.csv/g, '')).join(', ')
                                 : tip.tips.replace(/\.csv/g, '')}
                         </p>
-                        <p className="text-xs text-gray-400">Baseado nos dados coletados de Tomada 2</p>
                     </div>
                 </div>
             </CardContent>

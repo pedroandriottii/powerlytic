@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from "react"
-import { Bell, Home, LineChart, User } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,7 +14,7 @@ import {
 import { ConsumptionCard } from "@/components/sections/consumptionCard"
 import { ApplianceCard } from "@/components/sections/applianceCard"
 import { TipCard } from "@/components/sections/tipCard"
-import { NavButton } from "@/components/sections/nav"
+import { NavBar } from "@/components/sections/navbar"
 import { getMonthlySpendProps, getTips, getApplianceSpend, getWeeklySpend } from "@/services"
 import { ApplianceSpendResponse, MonthlySpendProps, TipProps, WeeklySpendProps } from "@/lib/types"
 import { ConsumptionGraph } from "@/components/sections/consumptionGraph"
@@ -24,7 +24,7 @@ export default function Component() {
   const [activeTab, setActiveTab] = React.useState("overview")
   const [data, setData] = React.useState<MonthlySpendProps | null>(null)
   const [tips, setTips] = React.useState<TipProps | null>(null)
-  const [applianceData, setApplianceData] = React.useState<ApplianceSpendResponse| null>(null)
+  const [applianceData, setApplianceData] = React.useState<ApplianceSpendResponse | null>(null)
   const [weeklyData, setWeeklyData] = React.useState<WeeklySpendProps | null>(null)
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -67,10 +67,7 @@ export default function Component() {
     <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="sticky top-0 z-10 bg-white p-4 shadow-sm">
         <div className="flex items-center justify-between">
-          <Image src={'/powerlyticLogo.png'}
-            width={100}
-            height={120}
-            alt="oi" />
+          <div className="text-xl font-semibold text-[#2D0C57]">powerlytic</div>
           <div className="flex items-center gap-2">
             <Bell className="h-6 w-6 text-power-dark" />
             <div className="h-8 w-8 rounded-full bg-gray-200" />
@@ -100,7 +97,7 @@ export default function Component() {
                   Object.entries(applianceData.data.appliance_data).map(([key, value]) => (
                     <ApplianceCard
                       key={key}
-                      title={key.replace('.csv', '')} 
+                      title={key.replace('.csv', '')}
                       consumption={`${value.mean_power.toFixed(2)} kWh`}
                       change={`${value.percentage.toFixed(2)}%`}
                     />
@@ -153,18 +150,7 @@ export default function Component() {
         </Tabs>
       </main>
 
-      <nav className="sticky bottom-0 border-t bg-white">
-        <div className="flex justify-around p-4">
-          <NavButton icon={Home} label="Overview" isActive={activeTab === "overview"} onClick={() => setActiveTab("overview")} />
-          <NavButton icon={LineChart} label="Reports" isActive={activeTab === "reports"} onClick={() => setActiveTab("reports")} />
-          <NavButton icon={Bell} label="Notificações" isActive={false} onClick={function (): void {
-            throw new Error("Function not implemented.")
-          }} />
-          <NavButton icon={User} label="Perfil" isActive={false} onClick={function (): void {
-            throw new Error("Function not implemented.")
-          }} />
-        </div>
-      </nav>
+      <NavBar currentPath={activeTab === "overview" ? "/" : "/reports"} />
     </div>
   )
 }

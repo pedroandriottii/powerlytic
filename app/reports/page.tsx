@@ -1,19 +1,31 @@
-"use client"
+"use client";
 
-import { Bell } from 'lucide-react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { ConsumptionCard } from '@/components/sections/consumptionCard'
-import { ConsumptionGraph } from '@/components/sections/consumptionGraph'
-import { NavBar } from '@/components/sections/navbar'
+import { useEffect, useState } from "react";
+import { Bell } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { NavBar } from "@/components/sections/navbar";
+import { fetchPredictionData } from "@/lib/apiHelper";
+import { PredictionGraph } from "@/components/sections/predictionGraph";
+
+
+type PredictionData = {
+    date: string;
+    forecast: number;
+}[];
 
 export default function Reports() {
+    const [predictions, setPredictions] = useState<PredictionData | null>(null);
+
+    useEffect(() => {
+        const getPredictions = async () => {
+            const result = await fetchPredictionData();
+            if (result && result.status === "success") {
+                setPredictions(result.data);
+            }
+        };
+        getPredictions();
+    }, []);
+
     return (
         <div className="flex min-h-screen flex-col bg-gray-50">
             <header className="sticky top-0 z-10 bg-white p-4 shadow-sm">
@@ -27,7 +39,7 @@ export default function Reports() {
             </header>
 
             <main className="flex-1 p-4">
-                <h1 className="text-2xl font-semibold text-[#2D0C57] mb-4">Reports</h1>
+                <h1 className="text-2xl font-semibold text-[#2D0C57] mb-4">Estimativas</h1>
 
                 <Tabs defaultValue="geral" className="space-y-4">
                     <TabsList className="w-full justify-start border-b bg-transparent p-0">
@@ -37,43 +49,35 @@ export default function Reports() {
                         >
                             Geral
                         </TabsTrigger>
-                        <TabsTrigger
-                            value="individual"
-                            className="border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#2D0C57] data-[state=active]:bg-transparent"
-                        >
-                            Aparelhos Individuais
-                        </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="geral" className="space-y-4">
-                        <ConsumptionCard showTip />
-
+                    <TabsContent value="geral" className="space-y-4 ">
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-sm font-medium">Comparativo</h2>
-                                <Select defaultValue="6">
-                                    <SelectTrigger className="w-[180px]">
-                                        <SelectValue placeholder="Selecione o período" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="6">Últimos 6 meses</SelectItem>
-                                        <SelectItem value="3">Últimos 3 meses</SelectItem>
-                                        <SelectItem value="1">Último mês</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <h2 className=" font-medium ">Previsão de Consumo por dia</h2>
                             </div>
-
-                            <ConsumptionGraph />
+                            <p className="text-sm text-gray-500">De acordo com os dados coletados dos últimos meses</p>
+                            {predictions ? (
+                                <PredictionGraph data={predictions} />
+                            ) : (
+                                <p>Carregando previsão...</p>
+                            )}
                         </div>
                     </TabsContent>
 
-                    <TabsContent value="individual">
-                        {/* Individual appliances content */}
-                    </TabsContent>
+                    {/* <TabsContent value="geral" className="space-y-4">
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-sm font-medium">Heatmap de Correlações</h2>
+                            </div>
+                            <CorrelationHeatmap />
+                        </div>
+                    </TabsContent> */}
+
                 </Tabs>
             </main>
 
             <NavBar currentPath="/reports" />
         </div>
-    )
+    );
 }
