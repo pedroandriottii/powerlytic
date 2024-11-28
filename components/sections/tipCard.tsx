@@ -1,6 +1,7 @@
+import { TipProps } from "@/lib/types";
 import { Card, CardContent } from "../ui/card";
 
-export function TipCard() {
+export function TipCard(tip: TipProps) {
     return (
         <Card>
             <CardContent className="p-4">
@@ -9,9 +10,11 @@ export function TipCard() {
                         <div className="h-full w-full rounded bg-purple-400" />
                     </div>
                     <div className="space-y-1">
-                        <h3 className="font-medium">Desligue a tomada durante a noite</h3>
-                        <p className="text-sm text-gray-600">
-                            Sua tomada 2 consome 16kWh durante a noite, ao desligá-la você reduz em 15% seu consumo final
+                        <h3 className="font-medium">Se atente à essas dicas!</h3>
+                        <p className="text-xs text-gray-600">
+                            {Array.isArray(tip.tips)
+                                ? tip.tips.map((tip) => tip.replace(/\.csv/g, '')).join(', ')
+                                : tip.tips.replace(/\.csv/g, '')}
                         </p>
                         <p className="text-xs text-gray-400">Baseado nos dados coletados de Tomada 2</p>
                     </div>

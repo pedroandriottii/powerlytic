@@ -15,11 +15,53 @@ import { ConsumptionCard } from "@/components/sections/consumptionCard"
 import { ApplianceCard } from "@/components/sections/applianceCard"
 import { TipCard } from "@/components/sections/tipCard"
 import { NavButton } from "@/components/sections/nav"
+import { getMonthlySpendProps, getTips, getApplianceSpend, getWeeklySpend } from "@/services"
+import { ApplianceSpendResponse, MonthlySpendProps, TipProps, WeeklySpendProps } from "@/lib/types"
 import { ConsumptionGraph } from "@/components/sections/consumptionGraph"
 import Image from "next/image"
 
 export default function Component() {
   const [activeTab, setActiveTab] = React.useState("overview")
+  const [data, setData] = React.useState<MonthlySpendProps | null>(null)
+  const [tips, setTips] = React.useState<TipProps | null>(null)
+  const [applianceData, setApplianceData] = React.useState<ApplianceSpendResponse| null>(null)
+  const [weeklyData, setWeeklyData] = React.useState<WeeklySpendProps | null>(null)
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const [monthlySpend, tips, applianceSpend, weeklySpend] = await Promise.all([
+        getMonthlySpendProps(),
+        getTips(),
+        getApplianceSpend(),
+        getWeeklySpend()
+      ])
+      setData(monthlySpend)
+      setTips(tips)
+      setApplianceData(applianceSpend)
+      setWeeklyData(weeklySpend)
+      setIsLoading(false);
+    }
+
+    fetchData()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center">
+          <Image
+            src="/energy.svg"
+            alt="Loading"
+            width={50}
+            height={50}
+            className="animate-spin"
+          />
+          <p className="mt-4 text-power-dark text-xl font-bold">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -41,9 +83,7 @@ export default function Component() {
           <TabsContent value="overview" className="space-y-4">
             <h1 className="text-2xl font-semibold text-power-dark">Olá, Pedro!</h1>
             <p className="text-sm text-gray-600">Essas são as últimas atualizações de seu consumo</p>
-
-            <ConsumptionCard />
-
+            {data && weeklyData && <ConsumptionCard data={data} weeklyData={weeklyData} />}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <h2 className="flex items-center gap-2 text-sm font-medium">
@@ -56,13 +96,18 @@ export default function Component() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <ApplianceCard title="Geladeira" consumption="10.5kWh" change="-21%" />
-                <ApplianceCard title="Tomada 1" consumption="10.5kWh" change="-21%" />
-                <ApplianceCard title="Tomada 2" consumption="10.5kWh" change="-21%" />
-                <ApplianceCard title="Ar condicionado sala" consumption="10.5kWh" change="-21%" />
+                {applianceData &&
+                  Object.entries(applianceData.data.appliance_data).map(([key, value]) => (
+                    <ApplianceCard
+                      key={key}
+                      title={key.replace('.csv', '')} 
+                      consumption={`${value.mean_power.toFixed(2)} kWh`}
+                      change={`${value.percentage.toFixed(2)}%`}
+                    />
+                  ))}
               </div>
 
-              <TipCard />
+              {tips && <TipCard tips={tips?.tips} />}
             </div>
           </TabsContent>
 
@@ -85,8 +130,7 @@ export default function Component() {
                 </TabsTrigger>
               </TabsList>
 
-              <ConsumptionCard showTip />
-
+              {data && weeklyData && <ConsumptionCard data={data} weeklyData={weeklyData} />}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-medium">Comparativo</h2>
@@ -124,12 +168,3 @@ export default function Component() {
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
